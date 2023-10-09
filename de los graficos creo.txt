@@ -1,0 +1,60 @@
+317089
+
+
+datos
+
+ public List<Grafico1> RetornarGrafico1()
+        {
+            List<Grafico1> objLista = new List<Grafico1>();
+
+            //Data Source=;Initial Catalog= ; User ID= ; Password=
+            using (SqlConnection oconexion = new SqlConnection("Data Source=BCRRBM00; Initial Catalog=LID_RIESG_COMERC; Integrated Security=True"))
+            {
+                string query = "spReg";
+
+                SqlCommand cmd = new SqlCommand(query, oconexion);
+                cmd.CommandType = CommandType.StoredProcedure;
+
+                oconexion.Open();
+
+                using (SqlDataReader dr = cmd.ExecuteReader())
+                {
+                    while (dr.Read())
+                    {
+                        objLista.Add(new Grafico1()
+                        {
+                            Mes = dr["Mes"].ToString(),
+                            Centro = decimal.Parse(dr["Centro"].ToString()),
+                            Occidente = decimal.Parse(dr["Occidente"].ToString()),
+                            Oriente = decimal.Parse(dr["Oriente"].ToString()),
+                        });
+                    }
+                }
+            }
+
+            return objLista;
+        }
+
+
+
+
+classe
+
+ public string Mes { get; set; }
+        public decimal Centro { get; set; }
+        public decimal Occidente { get; set; }
+        public decimal Oriente { get; set; }
+
+Home Controloer
+
+
+        [HttpGet]
+        public JsonResult ReporteProductos()
+        {
+            DT_Reporte objDT_Reporte = new DT_Reporte();
+
+            List<Grafico1> objLista = objDT_Reporte.RetornarGrafico1();
+
+            return Json(objLista, JsonRequestBehavior.AllowGet);
+        }
+
